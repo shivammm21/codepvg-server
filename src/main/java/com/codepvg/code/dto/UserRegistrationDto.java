@@ -3,12 +3,10 @@ package com.codepvg.code.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
+@Data
 public class UserRegistrationDto {
-    
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
-    private String username;
     
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
@@ -27,11 +25,21 @@ public class UserRegistrationDto {
     @NotBlank(message = "Branch is required")
     private String branch;
 
+    @NotBlank(message = "PRN number is required")
+    private String prnNumber;
+
+    @NotBlank(message = "Mobile number is required")
+    @Size(min = 10, max = 15, message = "Mobile number must be between 10 and 15 digits")
+    private String mobileNumber;
+
+    @NotBlank(message = "Role is required")
+    private String role;
+
+
     // Constructors
     public UserRegistrationDto() {}
 
-    public UserRegistrationDto(String username, String email, String password, String fullName, String year, String branch) {
-        this.username = username;
+    public UserRegistrationDto(String email, String password, String fullName, String year, String branch) {
         this.email = email;
         this.password = password;
         this.fullName = fullName;
@@ -39,22 +47,4 @@ public class UserRegistrationDto {
         this.branch = branch;
     }
 
-    // Getters and Setters
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
-
-    public String getYear() { return year; }
-    public void setYear(String year) { this.year = year; }
-
-    public String getBranch() { return branch; }
-    public void setBranch(String branch) { this.branch = branch; }
 }

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/profile")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ProfileController {
 
     @Autowired
@@ -36,8 +36,8 @@ public class ProfileController {
     @GetMapping
     public ResponseEntity<?> getProfile(Authentication auth) {
         try {
-            String username = auth.getName();
-            Optional<User> userOpt = userService.findByUsername(username);
+            String email = auth.getName(); // JWT now uses email as subject
+            Optional<User> userOpt = userService.findByEmail(email);
             
             if (!userOpt.isPresent()) {
                 Map<String, String> error = new HashMap<>();
@@ -64,8 +64,8 @@ public class ProfileController {
     public ResponseEntity<?> updateProfile(@Valid @RequestBody ProfileUpdateDto profileDto, 
                                          Authentication auth) {
         try {
-            String currentUsername = auth.getName();
-            Optional<User> userOpt = userService.findByUsername(currentUsername);
+            String currentEmail = auth.getName(); // JWT now uses email as subject
+            Optional<User> userOpt = userService.findByEmail(currentEmail);
             
             if (!userOpt.isPresent()) {
                 Map<String, String> error = new HashMap<>();

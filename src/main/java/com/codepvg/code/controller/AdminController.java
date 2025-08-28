@@ -1,6 +1,7 @@
 package com.codepvg.code.controller;
 
 import com.codepvg.code.dto.ProblemCreateDto;
+import com.codepvg.code.dto.UserProfile;
 import com.codepvg.code.model.Problem;
 import com.codepvg.code.model.Submission;
 import com.codepvg.code.model.User;
@@ -22,7 +23,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AdminController {
 
     @Autowired
@@ -36,15 +37,15 @@ public class AdminController {
 
     // User Management APIs
     @GetMapping("/users/pending")
-    public ResponseEntity<List<User>> getPendingUsers() {
-        List<User> pendingUsers = userService.getPendingUsers();
+    public ResponseEntity<List<UserProfile>> getPendingUsers() {
+        List<UserProfile> pendingUsers = userService.getPendingUsers();
         return ResponseEntity.ok(pendingUsers);
     }
 
     @PostMapping("/users/{userId}/approve")
     public ResponseEntity<?> approveUser(@PathVariable String userId) {
         try {
-            User user = userService.approveUser(userId);
+            UserProfile user = userService.approveUser(userId);
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User approved successfully");
             response.put("user", user);

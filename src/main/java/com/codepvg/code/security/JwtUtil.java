@@ -39,6 +39,11 @@ public class JwtUtil {
                 .getBody()
                 .getSubject();
     }
+    
+    // Alias method for clarity - JWT subject is now email
+    public String getEmailFromToken(String token) {
+        return getUsernameFromToken(token);
+    }
 
     public String getRoleFromToken(String token) {
         return Jwts.parserBuilder()

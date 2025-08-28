@@ -37,6 +37,9 @@ A comprehensive Spring Boot-based coding platform that provides an online judge 
 
 ## 🔧 Installation & Setup
 
+### CORS Configuration
+The application is configured to accept requests only from `http://localhost:3000` for security. This is where your frontend React/Vue/Angular application should be running.
+
 ### 1. Clone the Repository
 
 ```bash
@@ -157,6 +160,9 @@ judge0.api.url=http://localhost:2358
 jwt.secret=your-256-bit-secret-key-here
 jwt.expiration=86400000
 
+# Admin Configuration
+admin.access.code=CODEPVG_ADMIN_2024_SECURE
+
 # Server Configuration
 server.port=8080
 ```
@@ -187,24 +193,35 @@ mvn clean package
 java -jar target/demo-0.0.1-SNAPSHOT.jar
 ```
 
-## 🔐 Default Admin Setup
+## 🔐 Admin Setup
 
-The application includes a data initialization service that creates a default admin user:
+### Admin Registration
+Admins can register using the dedicated admin registration endpoint with the following requirements:
 
-```
-Username: admin
-Password: admin123
-Email: admin@codepvg.com
-```
+**Admin Access Code:** `CODEPVG_ADMIN_2024_SECURE`
 
-**⚠️ Important**: Change the default admin credentials immediately after first login.
+**Registration Fields:**
+- First Name & Last Name
+- Department (e.g., Computer Science, Information Technology)
+- Admin Access Code (required for verification)
+- Email Address
+- Password (minimum 8 characters)
+- Confirm Password
+
+**⚠️ Important**: 
+- Change the admin access code in production environments
+- Admin accounts are automatically approved upon successful registration
+- The admin access code is configured in `application.properties`
 
 ## 📚 API Documentation
 
 ### Authentication Endpoints
 ```
-POST /api/auth/register - User registration
+POST /api/auth/register - Student registration
+POST /api/auth/register/admin - Admin registration
 POST /api/auth/login - User login
+GET  /api/auth/status/{username} - Check user status by username
+GET  /api/auth/status/email/{email} - Check user status by email
 ```
 
 ### Admin Endpoints
