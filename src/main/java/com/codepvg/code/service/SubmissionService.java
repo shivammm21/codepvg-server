@@ -260,12 +260,11 @@ public class SubmissionService {
         }
     }
 
-    private double extractTimeLimitFromConstraints(String constraints) {
-        if (constraints == null) return 2.0; // Default 2 seconds
+    private double extractTimeLimitFromConstraints(java.util.List<String> constraints) {
+        if (constraints == null || constraints.isEmpty()) return 2.0; // Default 2 seconds
         
-        // Try to extract time limit from constraints
-        // Look for patterns like "Time: 1s", "1 second", "2000ms", etc.
-        String lowerConstraints = constraints.toLowerCase();
+        // Concatenate list into a single searchable string
+        String lowerConstraints = String.join(" ", constraints).toLowerCase();
         
         if (lowerConstraints.contains("1 second") || lowerConstraints.contains("1s")) return 1.0;
         if (lowerConstraints.contains("2 second") || lowerConstraints.contains("2s")) return 2.0;
@@ -331,6 +330,34 @@ public class SubmissionService {
         Map<String, Object> result = new HashMap<>();
         
         try {
+            // Validate that user submitted only the Solution class (per templates)
+            String lang = submissionDto.getLanguage() != null ? submissionDto.getLanguage().toLowerCase() : "";
+            String code = submissionDto.getSourceCode() != null ? submissionDto.getSourceCode() : "";
+            boolean hasSolution = false;
+            boolean hasForbiddenMain = false;
+            if (lang.contains("java")) {
+                hasSolution = code.contains("class Solution");
+                hasForbiddenMain = code.contains("public static void main") || code.contains("Scanner ");
+            } else if (lang.contains("python")) {
+                hasSolution = code.contains("class Solution");
+                hasForbiddenMain = code.contains("if __name__ == '__main__'") || code.contains("input()");
+            } else if (lang.contains("cpp") || lang.contains("c++")) {
+                hasSolution = code.contains("class Solution");
+                hasForbiddenMain = code.contains("int main(") || code.contains("cin >>") || code.contains("getline(");
+            }
+            if (!hasSolution) {
+                result.put("success", false);
+                result.put("status", "INVALID_TEMPLATE");
+                result.put("message", "Please implement only the 'Solution' class as per the provided template. Do not include main() or input handling.");
+                return result;
+            }
+            if (hasForbiddenMain) {
+                result.put("success", false);
+                result.put("status", "INVALID_TEMPLATE");
+                result.put("message", "Remove main() and any input/output code. Only provide the 'Solution' class methods as per the template.");
+                return result;
+            }
+            
             // Get problem details
             Optional<Problem> problemOpt = problemService.getProblemById(submissionDto.getProblemId());
             if (!problemOpt.isPresent()) {

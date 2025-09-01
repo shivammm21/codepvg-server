@@ -15,13 +15,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProblemService {
 
     @Autowired
     private ProblemRepository problemRepository;
+
+    @Autowired
+    private SequenceService sequenceService;
 
     public List<Problem> getAllProblems() {
         return problemRepository.findAllOrderByCreatedAtDesc();
@@ -35,6 +37,38 @@ public class ProblemService {
         problem.setCreatedBy(createdBy);
         problem.setCreatedAt(LocalDateTime.now());
         problem.setUpdatedAt(LocalDateTime.now());
+        // Assign sequential problem number
+        if (problem.getProblemNumber() == null) {
+            long next = sequenceService.getNextSequence("problem_number_seq");
+            problem.setProblemNumber(next);
+        }
+        // Ensure year tags are included based on targetYears
+        List<String> tags = problem.getTags() != null ? new ArrayList<>(problem.getTags()) : new ArrayList<>();
+        List<String> targetYears = problem.getTargetYears();
+        if (targetYears != null) {
+            for (String y : targetYears) {
+                if (y == null) continue;
+                String lower = y.trim().toLowerCase();
+                switch (lower) {
+                    case "first":
+                        if (!tags.contains("first year")) tags.add("first year");
+                        break;
+                    case "second":
+                        if (!tags.contains("second year")) tags.add("second year");
+                        break;
+                    case "third":
+                        if (!tags.contains("third year")) tags.add("third year");
+                        break;
+                    case "final":
+                        if (!tags.contains("final year")) tags.add("final year");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        problem.setTags(tags);
+
         return problemRepository.save(problem);
     }
 
@@ -126,10 +160,17 @@ public class ProblemService {
                     Cell testOutputCell = row.getCell(7);
                     String testOutput = testOutputCell != null ? getCellValueAsString(testOutputCell) : exampleOutput;
                     
-                    // Constraints (Column I)
+                    // Constraints (Column I) -> parse into List<String>
                     Cell constraintCell = row.getCell(8);
                     if (constraintCell != null) {
-                        problem.setConstraints(getCellValueAsString(constraintCell));
+                        String constraintsRaw = getCellValueAsString(constraintCell);
+                        if (constraintsRaw != null && !constraintsRaw.trim().isEmpty()) {
+                            List<String> constraintsList = Arrays.stream(constraintsRaw.split("[\n;,]"))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(java.util.stream.Collectors.toList());
+                            problem.setConstraints(constraintsList);
+                        }
                     }
                     
                     // Create test case
@@ -140,6 +181,9 @@ public class ProblemService {
                     // Set default values
                     problem.setTags(problem.getTopics() != null ? problem.getTopics() : Arrays.asList("general"));
                     problem.setCreatedBy(createdBy);
+                    // Assign sequential problem number
+                    long next = sequenceService.getNextSequence("problem_number_seq");
+                    problem.setProblemNumber(next);
                     
                     problems.add(problem);
                 }
@@ -175,6 +219,9 @@ public class ProblemService {
         problem.setTopics(dto.getTopics());
         problem.setTags(dto.getTags());
         problem.setCreatedBy(createdBy);
+        // Assign sequential problem number
+        long next = sequenceService.getNextSequence("problem_number_seq");
+        problem.setProblemNumber(next);
 
         // Set target years
         problem.setTargetYears(dto.getTargetYears());

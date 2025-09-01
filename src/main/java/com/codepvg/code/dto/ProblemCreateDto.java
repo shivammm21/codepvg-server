@@ -14,8 +14,8 @@ public class ProblemCreateDto {
     @NotBlank(message = "Description is required")
     private String description;
     
-    @NotBlank(message = "Constraints are required")
-    private String constraints;
+    @NotNull(message = "Constraints are required")
+    private List<String> constraints;
     
     @NotNull(message = "Difficulty is required")
     private Problem.Difficulty difficulty;
@@ -119,8 +119,8 @@ public class ProblemCreateDto {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public String getConstraints() { return constraints; }
-    public void setConstraints(String constraints) { this.constraints = constraints; }
+    public List<String> getConstraints() { return constraints; }
+    public void setConstraints(List<String> constraints) { this.constraints = constraints; }
 
     public Problem.Difficulty getDifficulty() { return difficulty; }
     public void setDifficulty(Problem.Difficulty difficulty) { this.difficulty = difficulty; }
