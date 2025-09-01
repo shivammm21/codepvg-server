@@ -27,6 +27,10 @@ public class ProblemCreateDto {
     private List<TestCaseDto> testCases;  // Test cases for validation
     
     private List<String> tags;  // Additional tags
+    
+    private List<String> targetYears;  // ["first", "second", "third", "final"]
+    
+    private CodeTemplatesDto codeTemplates;  // Code templates for different languages
 
     public static class ExampleDto {
         private String input;
@@ -76,6 +80,35 @@ public class ProblemCreateDto {
         public void setHidden(boolean hidden) { isHidden = hidden; }
     }
 
+    public static class CodeTemplatesDto {
+        private String cTemplate;
+        private String cppTemplate;
+        private String pythonTemplate;
+        private String javaTemplate;
+
+        public CodeTemplatesDto() {}
+
+        public CodeTemplatesDto(String cTemplate, String cppTemplate, String pythonTemplate, String javaTemplate) {
+            this.cTemplate = cTemplate;
+            this.cppTemplate = cppTemplate;
+            this.pythonTemplate = pythonTemplate;
+            this.javaTemplate = javaTemplate;
+        }
+
+        // Getters and Setters
+        public String getCTemplate() { return cTemplate; }
+        public void setCTemplate(String cTemplate) { this.cTemplate = cTemplate; }
+
+        public String getCppTemplate() { return cppTemplate; }
+        public void setCppTemplate(String cppTemplate) { this.cppTemplate = cppTemplate; }
+
+        public String getPythonTemplate() { return pythonTemplate; }
+        public void setPythonTemplate(String pythonTemplate) { this.pythonTemplate = pythonTemplate; }
+
+        public String getJavaTemplate() { return javaTemplate; }
+        public void setJavaTemplate(String javaTemplate) { this.javaTemplate = javaTemplate; }
+    }
+
     // Constructors
     public ProblemCreateDto() {}
 
@@ -103,4 +136,10 @@ public class ProblemCreateDto {
 
     public List<String> getTags() { return tags; }
     public void setTags(List<String> tags) { this.tags = tags; }
+
+    public List<String> getTargetYears() { return targetYears; }
+    public void setTargetYears(List<String> targetYears) { this.targetYears = targetYears; }
+
+    public CodeTemplatesDto getCodeTemplates() { return codeTemplates; }
+    public void setCodeTemplates(CodeTemplatesDto codeTemplates) { this.codeTemplates = codeTemplates; }
 }

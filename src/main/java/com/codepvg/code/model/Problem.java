@@ -24,9 +24,40 @@ public class Problem {
     private String createdBy;
     private int totalSubmissions;
     private int totalSolved;
+    private List<String> targetYears; // ["first", "second", "third", "final"]
+    private CodeTemplates codeTemplates; // Code templates for different languages
 
     public enum Difficulty {
         EASY, MEDIUM, HARD
+    }
+
+    public static class CodeTemplates {
+        private String cTemplate;
+        private String cppTemplate;
+        private String pythonTemplate;
+        private String javaTemplate;
+
+        public CodeTemplates() {}
+
+        public CodeTemplates(String cTemplate, String cppTemplate, String pythonTemplate, String javaTemplate) {
+            this.cTemplate = cTemplate;
+            this.cppTemplate = cppTemplate;
+            this.pythonTemplate = pythonTemplate;
+            this.javaTemplate = javaTemplate;
+        }
+
+        // Getters and Setters
+        public String getCTemplate() { return cTemplate; }
+        public void setCTemplate(String cTemplate) { this.cTemplate = cTemplate; }
+
+        public String getCppTemplate() { return cppTemplate; }
+        public void setCppTemplate(String cppTemplate) { this.cppTemplate = cppTemplate; }
+
+        public String getPythonTemplate() { return pythonTemplate; }
+        public void setPythonTemplate(String pythonTemplate) { this.pythonTemplate = pythonTemplate; }
+
+        public String getJavaTemplate() { return javaTemplate; }
+        public void setJavaTemplate(String javaTemplate) { this.javaTemplate = javaTemplate; }
     }
 
     public static class Example {
@@ -127,4 +158,10 @@ public class Problem {
 
     public int getTotalSolved() { return totalSolved; }
     public void setTotalSolved(int totalSolved) { this.totalSolved = totalSolved; }
+
+    public List<String> getTargetYears() { return targetYears; }
+    public void setTargetYears(List<String> targetYears) { this.targetYears = targetYears; }
+
+    public CodeTemplates getCodeTemplates() { return codeTemplates; }
+    public void setCodeTemplates(CodeTemplates codeTemplates) { this.codeTemplates = codeTemplates; }
 }

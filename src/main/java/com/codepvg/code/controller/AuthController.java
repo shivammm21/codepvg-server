@@ -131,7 +131,7 @@ public class AuthController {
             User admin = userService.registerAdmin(registrationDto);
             
             // Generate JWT token for the newly registered admin
-            String token = jwtUtil.generateToken(admin.getEmail(), admin.getRole().name());
+            String token = jwtUtil.generateToken(admin.getUsername(), admin.getRole().name());
             
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Admin registered successfully and approved automatically.");
@@ -165,10 +165,10 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/status/{email}")
-    public ResponseEntity<?> getUserStatus(@PathVariable String email) {
+    @GetMapping("/status/{username}")
+    public ResponseEntity<?> getUserStatus(@PathVariable String username) {
         try {
-            Optional<User> userOpt = userService.findByEmail(email);
+            Optional<User> userOpt = userService.findByUsername(username);
             
             if (!userOpt.isPresent()) {
                 Map<String, String> error = new HashMap<>();

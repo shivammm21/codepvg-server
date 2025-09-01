@@ -176,6 +176,9 @@ public class ProblemService {
         problem.setTags(dto.getTags());
         problem.setCreatedBy(createdBy);
 
+        // Set target years
+        problem.setTargetYears(dto.getTargetYears());
+
         // Convert examples
         if (dto.getExamples() != null) {
             List<Problem.Example> examples = new ArrayList<>();
@@ -202,7 +205,109 @@ public class ProblemService {
             problem.setTestCases(testCases);
         }
 
+        // Convert code templates
+        if (dto.getCodeTemplates() != null) {
+            Problem.CodeTemplates templates = new Problem.CodeTemplates(
+                dto.getCodeTemplates().getCTemplate(),
+                dto.getCodeTemplates().getCppTemplate(),
+                dto.getCodeTemplates().getPythonTemplate(),
+                dto.getCodeTemplates().getJavaTemplate()
+            );
+            problem.setCodeTemplates(templates);
+        } else {
+            // Generate default templates if not provided
+            problem.setCodeTemplates(generateDefaultCodeTemplates(dto.getTitle()));
+        }
+
         return problemRepository.save(problem);
+    }
+
+    // Helper method to generate default code templates
+    private Problem.CodeTemplates generateDefaultCodeTemplates(String problemTitle) {
+        Problem.CodeTemplates templates = new Problem.CodeTemplates();
+        String functionName = "solve";
+        
+        // C Template
+        templates.setCTemplate(
+            "#include <stdio.h>\n" +
+            "#include <stdlib.h>\n" +
+            "#include <string.h>\n\n" +
+            "// Problem: " + problemTitle + "\n" +
+            "// Complete the function below\n\n" +
+            "class MySolution {\n" +
+            "public:\n" +
+            "    // Write your solution here\n" +
+            "    int " + functionName + "() {\n" +
+            "        // TODO: Implement your logic\n" +
+            "        return 0;\n" +
+            "    }\n" +
+            "};\n\n" +
+            "int main() {\n" +
+            "    MySolution solution;\n" +
+            "    // Test your solution\n" +
+            "    return 0;\n" +
+            "}"
+        );
+        
+        // C++ Template
+        templates.setCppTemplate(
+            "#include <iostream>\n" +
+            "#include <vector>\n" +
+            "using namespace std;\n\n" +
+            "class Solution {\n" +
+            "public:\n" +
+            "    int " + functionName + "() {\n" +
+            "        // TODO: Implement your logic here\n" +
+            "        return 0;\n" +
+            "    }\n" +
+            "};\n\n" +
+            "int main() {\n" +
+            "    // Read input here\n" +
+            "    \n" +
+            "    Solution solution;\n" +
+            "    // Call your solution method and print result\n" +
+            "    \n" +
+            "    return 0;\n" +
+            "}"
+        );
+        
+        // Python Template
+        templates.setPythonTemplate(
+            "class Solution:\n" +
+            "    def " + functionName + "(self):\n" +
+            "        \"\"\"\n" +
+            "        TODO: Implement your logic here\n" +
+            "        \"\"\"\n" +
+            "        pass\n\n" +
+            "if __name__ == \"__main__\":\n" +
+            "    # Read input here\n" +
+            "    \n" +
+            "    solution = Solution()\n" +
+            "    # Call your solution method and print result\n"
+        );
+        
+        // Java Template
+        templates.setJavaTemplate(
+            "import java.util.Scanner;\n\n" +
+            "public class Solution {\n" +
+            "    public int " + functionName + "() {\n" +
+            "        // TODO: Implement your logic here\n" +
+            "        return 0;\n" +
+            "    }\n" +
+            "    \n" +
+            "    public static void main(String[] args) {\n" +
+            "        Scanner sc = new Scanner(System.in);\n" +
+            "        // Read input here\n" +
+            "        \n" +
+            "        Solution solution = new Solution();\n" +
+            "        // Call your solution method and print result\n" +
+            "        \n" +
+            "        sc.close();\n" +
+            "    }\n" +
+            "}"
+        );
+        
+        return templates;
     }
 
     public List<Problem> searchProblems(String query) {

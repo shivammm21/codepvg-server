@@ -548,4 +548,106 @@ public class AdminController {
             return ResponseEntity.badRequest().body(error);
         }
     }
+
+    // Helper method to generate default code templates
+    private Problem.CodeTemplates generateDefaultCodeTemplates(String problemTitle, String functionName) {
+        Problem.CodeTemplates templates = new Problem.CodeTemplates();
+        
+        // C Template
+        templates.setCTemplate(
+            "#include <stdio.h>\n" +
+            "#include <stdlib.h>\n" +
+            "#include <string.h>\n\n" +
+            "// Problem: " + problemTitle + "\n" +
+            "// Complete the function below\n\n" +
+            "class MySolution {\n" +
+            "public:\n" +
+            "    // Write your solution here\n" +
+            "    int " + functionName + "() {\n" +
+            "        // TODO: Implement your logic\n" +
+            "        return 0;\n" +
+            "    }\n" +
+            "};\n\n" +
+            "int main() {\n" +
+            "    MySolution solution;\n" +
+            "    // Test your solution\n" +
+            "    return 0;\n" +
+            "}"
+        );
+        
+        // C++ Template
+        templates.setCppTemplate(
+            "#include <iostream>\n" +
+            "#include <vector>\n" +
+            "#include <string>\n" +
+            "#include <algorithm>\n" +
+            "using namespace std;\n\n" +
+            "// Problem: " + problemTitle + "\n" +
+            "// Complete the function below\n\n" +
+            "class MySolution {\n" +
+            "public:\n" +
+            "    // Write your solution here\n" +
+            "    int " + functionName + "() {\n" +
+            "        // TODO: Implement your logic\n" +
+            "        return 0;\n" +
+            "    }\n" +
+            "};\n\n" +
+            "int main() {\n" +
+            "    MySolution solution;\n" +
+            "    // Test your solution\n" +
+            "    return 0;\n" +
+            "}"
+        );
+        
+        // Python Template
+        templates.setPythonTemplate(
+            "# Problem: " + problemTitle + "\n" +
+            "# Complete the function below\n\n" +
+            "class MySolution:\n" +
+            "    def " + functionName + "(self):\n" +
+            "        \"\"\"\n" +
+            "        Write your solution here\n" +
+            "        \"\"\"\n" +
+            "        # TODO: Implement your logic\n" +
+            "        pass\n\n" +
+            "# Test your solution\n" +
+            "if __name__ == \"__main__\":\n" +
+            "    solution = MySolution()\n" +
+            "    # Test your solution here\n" +
+            "    pass"
+        );
+        
+        // Java Template
+        templates.setJavaTemplate(
+            "import java.util.*;\n" +
+            "import java.io.*;\n\n" +
+            "// Problem: " + problemTitle + "\n" +
+            "// Complete the function below\n\n" +
+            "class MySolution {\n" +
+            "    // Write your solution here\n" +
+            "    public int " + functionName + "() {\n" +
+            "        // TODO: Implement your logic\n" +
+            "        return 0;\n" +
+            "    }\n" +
+            "}\n\n" +
+            "public class Main {\n" +
+            "    public static void main(String[] args) {\n" +
+            "        MySolution solution = new MySolution();\n" +
+            "        // Test your solution\n" +
+            "    }\n" +
+            "}"
+        );
+        
+        return templates;
+    }
+
+    // Helper method to validate target years
+    private boolean isValidTargetYear(String year) {
+        return year != null && (
+            year.equalsIgnoreCase("first") ||
+            year.equalsIgnoreCase("second") ||
+            year.equalsIgnoreCase("third") ||
+            year.equalsIgnoreCase("final")
+        );
+    }
 }

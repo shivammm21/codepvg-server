@@ -1,0 +1,44 @@
+{
+  "title": "Two Sum",
+  "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.",
+  "difficulty": "EASY",
+  "topics": ["array", "hash-table", "two-pointers"],
+  "targetYears": ["first", "second"],
+  "examples": [
+    {
+      "input": "nums = [2,7,11,15], target = 9",
+      "output": "[0,1]",
+      "explanation": "Because nums[0] + nums[1] == 9, we return [0, 1]."
+    },
+    {
+      "input": "nums = [3,2,4], target = 6",
+      "output": "[1,2]",
+      "explanation": "Because nums[1] + nums[2] == 6, we return [1, 2]."
+    }
+  ],
+  "testCases": [
+    {
+      "input": "[2,7,11,15]\n9",
+      "expectedOutput": "[0,1]",
+      "isHidden": false
+    },
+    {
+      "input": "[3,2,4]\n6",
+      "expectedOutput": "[1,2]",
+      "isHidden": false
+    },
+    {
+      "input": "[3,3]\n6",
+      "expectedOutput": "[0,1]",
+      "isHidden": true
+    }
+  ],
+  "constraints": "2 <= nums.length <= 10^4\n-10^9 <= nums[i] <= 10^9\n-10^9 <= target <= 10^9\nOnly one valid answer exists.",
+  "tags": ["beginner", "interview"],
+  "codeTemplates": {
+    "cTemplate": "#include <stdio.h>\n#include <stdlib.h>\n\n/**\n * Note: The returned array must be malloced, assume caller calls free().\n */\nint* twoSum(int* nums, int numsSize, int target, int* returnSize) {\n    // TODO: Implement your logic here\n    // Hint: Use nested loops or hash table approach\n    \n    *returnSize = 2;\n    int* result = (int*)malloc(2 * sizeof(int));\n    \n    // Method 1: Brute Force O(n²)\n    // for (int i = 0; i < numsSize; i++) {\n    //     for (int j = i + 1; j < numsSize; j++) {\n    //         if (nums[i] + nums[j] == target) {\n    //             result[0] = i;\n    //             result[1] = j;\n    //             return result;\n    //         }\n    //     }\n    // }\n    \n    // Your code here\n    \n    return result;\n}\n\nint main() {\n    int n;\n    scanf(\"%d\", &n);  // size of array\n    \n    int* nums = (int*)malloc(n * sizeof(int));\n    for (int i = 0; i < n; i++) {\n        scanf(\"%d\", &nums[i]);  // array elements\n    }\n    \n    int target;\n    scanf(\"%d\", &target);  // target value\n    \n    int returnSize;\n    int* result = twoSum(nums, n, target, &returnSize);\n    \n    for (int i = 0; i < returnSize; i++) {\n        printf(\"%d \", result[i]);\n    }\n    \n    free(nums);\n    free(result);\n    return 0;\n}",
+    "cppTemplate": "#include <iostream>\n#include <vector>\n#include <unordered_map>\nusing namespace std;\n\nclass Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        // TODO: Implement your logic here\n        // Hint: Use unordered_map for O(n) solution or nested loops for O(n²)\n        \n        // Method 1: Brute Force O(n²)\n        // for (int i = 0; i < nums.size(); i++) {\n        //     for (int j = i + 1; j < nums.size(); j++) {\n        //         if (nums[i] + nums[j] == target) {\n        //             return {i, j};\n        //         }\n        //     }\n        // }\n        \n        // Method 2: Hash Map O(n) - Implement this\n        // unordered_map<int, int> map;\n        // for (int i = 0; i < nums.size(); i++) {\n        //     int complement = target - nums[i];\n        //     if (map.find(complement) != map.end()) {\n        //         return {map[complement], i};\n        //     }\n        //     map[nums[i]] = i;\n        // }\n        \n        // Your code here\n        return {};\n    }\n};\n\nint main() {\n    int n;\n    cin >> n;  // size of array\n    \n    vector<int> nums(n);\n    for (int i = 0; i < n; i++) {\n        cin >> nums[i];  // array elements\n    }\n    \n    int target;\n    cin >> target;  // target value\n    \n    Solution solution;\n    vector<int> result = solution.twoSum(nums, target);\n    \n    for (int r : result) {\n        cout << r << \" \";\n    }\n    \n    return 0;\n}",
+    "pythonTemplate": "class Solution:\n    def twoSum(self, nums, target):\n        \"\"\"\n        :type nums: List[int]\n        :type target: int\n        :rtype: List[int]\n        \n        TODO: Implement your logic here\n        Hint: Use dictionary for O(n) solution or nested loops for O(n²)\n        \"\"\"\n        \n        # Method 1: Brute Force O(n²)\n        # for i in range(len(nums)):\n        #     for j in range(i + 1, len(nums)):\n        #         if nums[i] + nums[j] == target:\n        #             return [i, j]\n        \n        # Method 2: Hash Map O(n) - Implement this\n        # num_map = {}\n        # for i, num in enumerate(nums):\n        #     complement = target - num\n        #     if complement in num_map:\n        #         return [num_map[complement], i]\n        #     num_map[num] = i\n        \n        # Your code here\n        pass\n\nif __name__ == \"__main__\":\n    n = int(input())  # size of array\n    nums = list(map(int, input().split()))  # array elements\n    target = int(input())  # target value\n    \n    solution = Solution()\n    result = solution.twoSum(nums, target)\n    \n    print(' '.join(map(str, result)))",
+    "javaTemplate": "import java.util.Scanner;\n\npublic class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // TODO: Implement your logic here\n        // Hint: Use HashMap for O(n) solution or nested loops for O(n²)\n        \n        // Method 1: Brute Force O(n²)\n        // for (int i = 0; i < nums.length; i++) {\n        //     for (int j = i + 1; j < nums.length; j++) {\n        //         if (nums[i] + nums[j] == target) {\n        //             return new int[]{i, j};\n        //         }\n        //     }\n        // }\n        \n        // Method 2: HashMap O(n) - Implement this\n        // Map<Integer, Integer> map = new HashMap<>();\n        // for (int i = 0; i < nums.length; i++) {\n        //     int complement = target - nums[i];\n        //     if (map.containsKey(complement)) {\n        //         return new int[]{map.get(complement), i};\n        //     }\n        //     map.put(nums[i], i);\n        // }\n        \n        // Your code here\n        return new int[]{};\n    }\n    \n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int n = sc.nextInt();       // size of array\n        int[] nums = new int[n];\n        for (int i = 0; i < n; i++) {\n            nums[i] = sc.nextInt(); // array elements\n        }\n        int target = sc.nextInt();  // target value\n        \n        Solution solution = new Solution();\n        int[] result = solution.twoSum(nums, target);\n        \n        for (int r : result) {\n            System.out.print(r + \" \");\n        }\n        sc.close();\n    }\n}"
+  }
+}
