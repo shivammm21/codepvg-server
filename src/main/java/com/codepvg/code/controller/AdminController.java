@@ -437,6 +437,70 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/leaderboard/summary")
+    public ResponseEntity<?> getAdminLeaderboardSummary() {
+        try {
+            // Fetch approved students and sort by totalSolved desc, then totalSubmissions asc
+            List<User> students = userService.getApprovedStudents();
+            int totalUsers = students.size();
+            students.sort((a, b) -> {
+                int solvedComparison = Integer.compare(b.getTotalSolved(), a.getTotalSolved());
+                if (solvedComparison != 0) return solvedComparison;
+                return Integer.compare(a.getTotalSubmissions(), b.getTotalSubmissions());
+            });
+
+            // Build performers for ALL approved students
+            List<Map<String, Object>> performers = new ArrayList<>();
+            for (User u : students) {
+                List<Submission> subs = submissionService.getUserSubmissions(u.getId());
+                int streak = computeCurrentStreakForAdmin(subs);
+                Map<String, Object> row = new HashMap<>();
+                row.put("userId", u.getId());
+                row.put("fullName", u.getFullName());
+                row.put("branch", u.getBranch());
+                row.put("year", u.getYear());
+                row.put("solved", u.getTotalSolved());
+                row.put("streak", streak);
+                performers.add(row);
+            }
+
+            // Build summary
+            Map<String, Object> summary = new HashMap<>();
+            summary.put("totalUsers", totalUsers);
+            summary.put("totalProblems", problemService.getAllProblems().size());
+            summary.put("generatedAt", java.time.LocalDateTime.now());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("summary", summary);
+            response.put("performers", performers);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to load admin leaderboard summary: " + e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    // Helper: compute current streak for a user (based on ACCEPTED submissions)
+    private int computeCurrentStreakForAdmin(List<Submission> submissions) {
+        if (submissions == null || submissions.isEmpty()) return 0;
+        java.util.Set<java.time.LocalDate> days = new java.util.HashSet<>();
+        for (Submission s : submissions) {
+            if (s.getStatus() == Submission.SubmissionStatus.ACCEPTED && s.getSubmittedAt() != null) {
+                days.add(s.getSubmittedAt().toLocalDate());
+            }
+        }
+        if (days.isEmpty()) return 0;
+        int streak = 0;
+        java.time.LocalDate d = java.time.LocalDate.now();
+        while (days.contains(d)) {
+            streak++;
+            d = d.minusDays(1);
+        }
+        return streak;
+    }
+
     @GetMapping("/students/{studentId}/performance")
     public ResponseEntity<?> getStudentPerformance(@PathVariable String studentId) {
         try {
