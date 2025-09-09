@@ -50,6 +50,12 @@ public class SubmissionService {
         }
 
         Problem problem = problemOpt.get();
+
+        // Template validation (based on problem code templates)
+        String templateValidationError = validateAgainstTemplate(problem, submissionDto.getSourceCode(), submissionDto.getLanguage());
+        if (templateValidationError != null) {
+            throw new RuntimeException("Template validation failed: " + templateValidationError);
+        }
         submission.setTotalTestCases(problem.getTestCases().size());
 
         // Save initial submission
@@ -330,33 +336,8 @@ public class SubmissionService {
         Map<String, Object> result = new HashMap<>();
         
         try {
-            // Validate that user submitted only the Solution class (per templates)
+            // For full-program submissions, rely on template-driven validation below
             String lang = submissionDto.getLanguage() != null ? submissionDto.getLanguage().toLowerCase() : "";
-            String code = submissionDto.getSourceCode() != null ? submissionDto.getSourceCode() : "";
-            boolean hasSolution = false;
-            boolean hasForbiddenMain = false;
-            if (lang.contains("java")) {
-                hasSolution = code.contains("class Solution");
-                hasForbiddenMain = code.contains("public static void main") || code.contains("Scanner ");
-            } else if (lang.contains("python")) {
-                hasSolution = code.contains("class Solution");
-                hasForbiddenMain = code.contains("if __name__ == '__main__'") || code.contains("input()");
-            } else if (lang.contains("cpp") || lang.contains("c++")) {
-                hasSolution = code.contains("class Solution");
-                hasForbiddenMain = code.contains("int main(") || code.contains("cin >>") || code.contains("getline(");
-            }
-            if (!hasSolution) {
-                result.put("success", false);
-                result.put("status", "INVALID_TEMPLATE");
-                result.put("message", "Please implement only the 'Solution' class as per the provided template. Do not include main() or input handling.");
-                return result;
-            }
-            if (hasForbiddenMain) {
-                result.put("success", false);
-                result.put("status", "INVALID_TEMPLATE");
-                result.put("message", "Remove main() and any input/output code. Only provide the 'Solution' class methods as per the template.");
-                return result;
-            }
             
             // Get problem details
             Optional<Problem> problemOpt = problemService.getProblemById(submissionDto.getProblemId());
@@ -366,6 +347,15 @@ public class SubmissionService {
             }
 
             Problem problem = problemOpt.get();
+
+            // Additional validation using the problem's code templates
+            String templateValidationError = validateAgainstTemplate(problem, submissionDto.getSourceCode(), submissionDto.getLanguage());
+            if (templateValidationError != null) {
+                result.put("success", false);
+                result.put("status", "INVALID_TEMPLATE");
+                result.put("message", templateValidationError);
+                return result;
+            }
             
             // Check if problem has examples
             if (problem.getExamples() == null || problem.getExamples().isEmpty()) {
@@ -530,6 +520,59 @@ public class SubmissionService {
         }
 
         return result;
+    }
+
+    // Validate user code against the problem's template rules.
+    // Returns null if OK, or a human-friendly error message string if invalid.
+    private String validateAgainstTemplate(Problem problem, String sourceCode, String language) {
+        if (sourceCode == null) sourceCode = "";
+        String lang = language != null ? language.toLowerCase() : "";
+
+        Problem.CodeTemplates templates = problem.getCodeTemplates();
+        String expectedJavaTemplate = templates != null ? templates.getJavaTemplate() : null;
+
+        // Java-specific validations
+        if (lang.contains("java")) {
+            String code = sourceCode;
+
+            // If a template is provided, infer the required class names and ensure presence
+            if (expectedJavaTemplate != null && !expectedJavaTemplate.isBlank()) {
+                java.util.regex.Matcher m = java.util.regex.Pattern
+                        .compile("class\\s+([A-Za-z_][A-Za-z0-9_]*)")
+                        .matcher(expectedJavaTemplate);
+                java.util.Set<String> requiredClasses = new java.util.HashSet<>();
+                while (m.find()) {
+                    requiredClasses.add(m.group(1));
+                }
+                for (String cls : requiredClasses) {
+                    boolean hasRequired = code.matches("(?s).*\\bclass\\s+" + java.util.regex.Pattern.quote(cls) + "\\b.*");
+                    if (!hasRequired) {
+                        return "Your code must define class '" + cls + "' as per the problem template.";
+                    }
+                }
+            } else {
+                // When no template is present, fall back to conventional 'Solution' class
+                if (!code.matches("(?s).*\\bclass\\s+Solution\\b.*")) {
+                    return "Your code must define class 'Solution'.";
+                }
+            }
+        }
+
+        // C++ validations could be added similarly (e.g., ensure class Solution present)
+        if (lang.contains("cpp") || lang.contains("c++")) {
+            if (!sourceCode.matches("(?s).*\\bclass\\s+Solution\\b.*")) {
+                return "Your code must define class 'Solution' as per the problem template.";
+            }
+        }
+
+        // Python validations: ensure class Solution exists by convention
+        if (lang.contains("python")) {
+            if (!sourceCode.matches("(?s).*\\bclass\\s+Solution\\b.*")) {
+                return "Your code must define class 'Solution' as per the problem template.";
+            }
+        }
+
+        return null; // OK
     }
 
     private String convertExampleInputToTestFormat(String exampleInput) {

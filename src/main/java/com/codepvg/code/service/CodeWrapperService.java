@@ -6,17 +6,9 @@ import org.springframework.stereotype.Service;
 public class CodeWrapperService {
 
     public String wrapCode(String userCode, String language, int languageId, String problemType) {
-        switch (language.toLowerCase()) {
-            case "java":
-                return wrapJavaCode(userCode, problemType);
-            case "python":
-                return wrapPythonCode(userCode, problemType);
-            case "cpp":
-            case "c++":
-                return wrapCppCode(userCode, problemType);
-            default:
-                return userCode; // Return as-is for unsupported languages
-        }
+        // Wrapping disabled: client sends full runnable programs.
+        // Always return the user code unchanged so Judge0 compiles/runs exactly what was submitted.
+        return userCode;
     }
 
     private String wrapJavaCode(String userCode, String problemType) {
@@ -195,17 +187,9 @@ public class CodeWrapperService {
 
     // Method to create dynamic wrapper based on problem's method signature
     public String wrapCodeForProblem(String userCode, String language, String problemTitle, String methodSignature) {
-        switch (language.toLowerCase()) {
-            case "java":
-                return wrapJavaCodeDynamic(userCode, problemTitle, methodSignature);
-            case "python":
-                return wrapPythonCodeDynamic(userCode, problemTitle, methodSignature);
-            case "cpp":
-            case "c++":
-                return wrapCppCodeDynamic(userCode, problemTitle, methodSignature);
-            default:
-                return wrapCode(userCode, language, 0, "default");
-        }
+        // Dynamic wrapping disabled: platform validates code against problem id
+        // and provides a full program. Return as-is.
+        return userCode;
     }
 
     private String wrapJavaCodeDynamic(String userCode, String problemTitle, String methodSignature) {
